@@ -45,7 +45,7 @@ You can install the dependencies via
 ```bash
 pip install -r requirements.txt
 ```
-
+Developer:
 Discord: jhandeeee
 RSN: PhyrWall, ShinyRedDino
 

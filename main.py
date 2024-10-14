@@ -130,7 +130,7 @@ clicked = StringVar()
 clicked.set(skill_choices[1])
 
 # Set up the GUI layout with consistent background color
-player_skill = Label(root, text="Player Skill: ", width=10, fg='#ffffff', bg='#0f2b5a')  # White text on dark blue background
+player_skill = Label(root, text="Player Skill: ", width=10, fg='#ffffff', bg='#0f2b5a',anchor='w')  # White text on dark blue background
 player_skill.grid(row=0, column=0)
 
 # Style for the OptionMenu
@@ -139,14 +139,14 @@ drop.config(width=10, bg='#c19a6b', fg='#ffffff', activebackground='#a6805e', ac
 drop.grid(row=0, column=1)
 
 # Entry fields/labels for player rank
-player_rank = Label(root, text="Player Rank: ", width=10, fg='#ffffff', bg='#0f2b5a')
+player_rank = Label(root, text="Player Rank: ", width=10, fg='#ffffff', bg='#0f2b5a',anchor='w')
 player_rank.grid(row=1, column=0)
 player_rank_input = Entry(root, width=15, bg='#d9d9d9', fg='#000000')  # Light gray input box with black text
 player_rank_input.grid(row=1, column=1)
 player_rank_input.insert(0, "")
 
 # Entry fields/labels for skill Xp
-skill_xp = Label(root, text="Skill Xp: ", width=10, fg='#ffffff', bg='#0f2b5a')
+skill_xp = Label(root, text="Skill Xp: ", width=10, fg='#ffffff', bg='#0f2b5a',anchor='w')
 skill_xp.grid(row=2, column=0)
 skill_xp_input = Entry(root, width=15, bg='#d9d9d9', fg='#000000')  # Light gray input box with black text
 skill_xp_input.insert(0, "")
@@ -182,6 +182,12 @@ highscore_button = Button(root,
 highscore_button.grid(row=8, column=2, columnspan=2)  # Adjust the row, column, and span as needed
 highscore_button.configure(background="#c19a6b", foreground="#ffffff",
                         activebackground="#a6805e", activeforeground="#ffffff")
+
+discord = Label(root, text="Discord: jhandeeee",fg='#ffffff', bg='#0f2b5a', width=20)
+discord.grid(row=9, column=0)
+
+rsn = Label(root, text="RSN: PhyrWall, ShinyRedDino",fg='#ffffff', bg='#0f2b5a')
+rsn.grid(row=9, column=2, columnspan=2)
 
 # Open hiscores for all players found
 def open_highscores(players):

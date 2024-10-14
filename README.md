@@ -35,6 +35,7 @@ or other sources and need to find their RSN after a double name change.
 ## Requirements
 
 To run this program, you need to install the following Python packages:
+- `python 3.10`: Required to run the program.
 - `requests`: for making HTTP requests to scrape data from the RuneScape hiscores.
 - `BeautifulSoup`: for parsing HTML and extracting player information.
 - `PIL` (Pillow): for image manipulation and resizing.

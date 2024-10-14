@@ -29,6 +29,8 @@ or other sources and need to find their RSN after a double name change.
 - Users can select a skill from a dropdown menu, input the player’s rank and XP, and search for that player.
 - A command console displays output messages and search results.
 - Buttons to search, update players on WOM, and open hiscores are styled and integrated into the GUI.
+- 
+![img](https://github.com/user-attachments/assets/8db3099c-e33d-4023-b20a-2eadfec1723b)
 
 ## Requirements
 

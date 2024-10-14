@@ -24,6 +24,8 @@ root.configure(background='#0f2b5a')
 
 # Start search player
 def search_player(rank, skil_xp):
+
+    # All skills
     dict_skills = {'Attack': 1,
                    'Defence': 2,
                    'Strength': 3,
@@ -50,10 +52,9 @@ def search_player(rank, skil_xp):
 
     rank = rank
     xp = skil_xp
-    page = int(rank / 25) + 1
 
     # Starting page is 6 pages sooner for page differences, this is where it will start web scraping
-    starting_page = page - 6
+    starting_page = int(rank / 25) + 1 - 6
     url = f'https://secure.runescape.com/m=hiscore_oldschool/overall?table={dict_skills[clicked.get()]}&page='
 
     # Run the search in a daemon thread
@@ -71,12 +72,14 @@ def hiscore_webscrape(url, target_xp, start_page, rank):
     search_button.configure(state=DISABLED)
     root.after(0, console_output.insert, END, f"Searching for player\nSkill: {clicked.get()}\nTarget XP: {target_xp}\nEstimated Rank: {rank}\n--------------------\n")
 
+    # Loop through pages, start page is ((rank / 25) + 1) - 6
     for page in range(start_page, start_page + 10):
         response = requests.get(url + str(page))
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, 'html.parser')
             player_rows = soup.find_all('tr', class_='personal-hiscores__row')
 
+            # For each row in table, search for xp
             for row in player_rows:
                 name_row = row.find('td', class_='left').find('a')
                 if name_row:
@@ -86,9 +89,9 @@ def hiscore_webscrape(url, target_xp, start_page, rank):
                         xp_text = xp_cells[-1].text.replace(',', '').strip()
                         xp = int(xp_text) if xp_text.isdigit() else None
 
+                        # if xp good, output player in console
                         if xp and xp == target_xp:
                             found_players.append(name)
-                            # Update the console output safely in the main thread
                             root.after(0, console_output.insert, END, f"Found {name} with target XP\n")
                             root.after(0, console_output.see, END)  # Scroll to the end of the text box
 

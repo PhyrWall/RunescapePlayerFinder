@@ -1,5 +1,5 @@
 """
-This program is a GUI tool to search for Old School RuneScape players (based on their rank/xp), track their rank and XP in specific skills,
+GUI tool to search for Old School RuneScape players (based on their rank/xp), track their rank and XP in specific skills,
 and interact with the Wise Old Man API for player updates. Developed by PhyrWall
 """
 
@@ -10,7 +10,6 @@ import time
 import tkinter as tk
 import webbrowser
 from tkinter import *
-from turtledemo.penrose import start
 
 import requests
 import wom

@@ -20,7 +20,7 @@ from bs4 import BeautifulSoup
 root = tk.Tk()
 root.title("Find Runescape Player")
 root.iconbitmap('assets\\search.ico')
-root.minsize(height=450, width=400)
+root.minsize(height=530, width=430)
 root.configure(background='#0f2b5a')
 
 # Start search player
@@ -75,7 +75,8 @@ def hiscore_webscrape(url, target_xp, start_page, rank):
     search_button.configure(state=DISABLED)
     root.after(0, console_output.insert, END, f"Searching for player\nSkill: {clicked.get()}\nTarget XP: {target_xp}\nEstimated Rank: {rank}\n--------------------\n")
     # Loop through pages, start page is ((rank / 25) + 1) - 6
-    for page in range(start_page, start_page + 5):
+    for page in range(start_page, start_page + 15):
+        print(page)
         response = requests.get(url + str(page))
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -159,7 +160,7 @@ skill_xp_input.grid(row=2, column=1)
 
 # Style the button
 search_button = Button(root, text="Search", command=check_boxes, width=20)
-search_button.grid(row=3, column=0, columnspan=2)
+search_button.grid(row=3, column=0, columnspan=3)
 search_button.configure(background="#c19a6b", foreground="#ffffff", activebackground="#a6805e", activeforeground="#ffffff")
 
 # Style for Command Console Label Frame
@@ -189,10 +190,10 @@ highscore_button.configure(background="#c19a6b", foreground="#ffffff",
                         activebackground="#a6805e", activeforeground="#ffffff")
 
 discord = Label(root, text="Discord: jhandeeee", fg='#ffffff', bg='#0f2b5a', width=20)
-discord.grid(row=9, column=0, sticky="W")  # Aligns the label to the left (west)
+discord.grid(row=9, column=0, sticky="SW")  # Aligns the label to the left (west)
 
 rsn = Label(root, text="RSN: PhyrWall, ShinyRedDino",fg='#ffffff', bg='#0f2b5a')
-rsn.grid(row=9, column=2, columnspan=2)
+rsn.grid(row=9, column=2, sticky="SE")  # Aligns the label to the left (west)
 
 # Open hiscores for all players found
 def open_highscores(players):

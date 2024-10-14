@@ -10,6 +10,7 @@ import time
 import tkinter as tk
 import webbrowser
 from tkinter import *
+from turtledemo.penrose import start
 
 import requests
 import wom
@@ -55,6 +56,8 @@ def search_player(rank, skil_xp):
 
     # Starting page is 6 pages sooner for page differences, this is where it will start web scraping
     starting_page = int(rank / 25) + 1 - 6
+    if starting_page < 0:
+        starting_page = 1
     url = f'https://secure.runescape.com/m=hiscore_oldschool/overall?table={dict_skills[clicked.get()]}&page='
 
     # Run the search in a daemon thread
@@ -71,9 +74,8 @@ def hiscore_webscrape(url, target_xp, start_page, rank):
     highscore_button.configure(state=DISABLED)
     search_button.configure(state=DISABLED)
     root.after(0, console_output.insert, END, f"Searching for player\nSkill: {clicked.get()}\nTarget XP: {target_xp}\nEstimated Rank: {rank}\n--------------------\n")
-
     # Loop through pages, start page is ((rank / 25) + 1) - 6
-    for page in range(start_page, start_page + 10):
+    for page in range(start_page, start_page + 5):
         response = requests.get(url + str(page))
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -165,7 +167,7 @@ console_frame = LabelFrame(root, text="Command Console", padx=5, pady=5, bg='#0f
 console_frame.grid(row=4, column=0, columnspan=3, rowspan=4, sticky="nsew")
 
 # Text widget for console output
-console_output = Text(console_frame, height=20, width=50, wrap=WORD, bg='#d9d9d9', fg='#000000')
+console_output = Text(console_frame, height=20, width=50, wrap=WORD, bg='#d9d9d9', fg='#000000', padx=5)
 console_output.pack(fill=BOTH, expand=True)
 
 # Button setup with your custom styles
@@ -173,7 +175,7 @@ update_button = Button(root,
                        text="Update Players",
                        command=lambda: update_wom(found_players),  # Trigger update_wom with found_players when clicked
                        width=20)
-update_button.grid(row=8, column=0, columnspan=1)  # Adjust the row, column, and span as needed
+update_button.grid(row=8, column=0, padx=5)  # Adjust the row, column, and span as needed
 update_button.configure(background="#c19a6b", foreground="#ffffff",
                         activebackground="#a6805e", activeforeground="#ffffff")
 
@@ -186,8 +188,8 @@ highscore_button.grid(row=8, column=2, columnspan=2)  # Adjust the row, column, 
 highscore_button.configure(background="#c19a6b", foreground="#ffffff",
                         activebackground="#a6805e", activeforeground="#ffffff")
 
-discord = Label(root, text="Discord: jhandeeee",fg='#ffffff', bg='#0f2b5a', width=20)
-discord.grid(row=9, column=0)
+discord = Label(root, text="Discord: jhandeeee", fg='#ffffff', bg='#0f2b5a', width=20)
+discord.grid(row=9, column=0, sticky="W")  # Aligns the label to the left (west)
 
 rsn = Label(root, text="RSN: PhyrWall, ShinyRedDino",fg='#ffffff', bg='#0f2b5a')
 rsn.grid(row=9, column=2, columnspan=2)
@@ -196,6 +198,8 @@ rsn.grid(row=9, column=2, columnspan=2)
 def open_highscores(players):
     base_url = f'https://secure.runescape.com/m=hiscore_oldschool/hiscorepersonal?user1='
     for player in players:
+        if len(players) > 20:
+            time.sleep(0.2)
         webbrowser.open(base_url + str(player))
 
 # Update players on wiseoldman

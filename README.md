@@ -44,4 +44,5 @@ pip install -r requirements.txt:
 ```
 
 Discord: jhandeeee
+RSN: PhyrWall, ShinyRedDino
 

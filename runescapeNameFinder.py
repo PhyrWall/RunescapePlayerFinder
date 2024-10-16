@@ -36,7 +36,7 @@ root.configure(background='#0f2b5a')
 def search_player(rank, skil_xp):
 
     # All skills
-    dict_skills = {'Attack': 1,
+    runescape_skills = {'Attack': 1,
                    'Defence': 2,
                    'Strength': 3,
                    'Hitpoints': 4,
@@ -67,7 +67,7 @@ def search_player(rank, skil_xp):
     starting_page = int(rank / 25) + 1 - 6
     if starting_page < 0:
         starting_page = 1
-    url = f'https://secure.runescape.com/m=hiscore_oldschool/overall?table={dict_skills[clicked.get()]}&page='
+    url = f'https://secure.runescape.com/m=hiscore_oldschool/overall?table={runescape_skills[clicked.get()]}&page='
 
     # Run the search in a daemon thread
     thread = threading.Thread(target=hiscore_webscrape, args=(url, xp, starting_page, rank))

@@ -10,15 +10,25 @@ import time
 import tkinter as tk
 import webbrowser
 from tkinter import *
+import sys
 
 import requests
 import wom
 from PIL import Image, ImageTk
 from bs4 import BeautifulSoup
 
+# https://stackoverflow.com/questions/31836104/pyinstaller-and-onefile-how-to-include-an-image-in-the-exe-file
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS2
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
 root = tk.Tk()
 root.title("Find Runescape Player")
-root.iconbitmap('assets\\search.ico')
+root.iconbitmap(resource_path('assets\\icon.ico'))
 root.minsize(height=530, width=430)
 root.configure(background='#0f2b5a')
 
@@ -230,7 +240,7 @@ def update_wom(players):
 
 
 # Handle image loading
-image_path = 'assets/Logo.png'
+image_path = resource_path('assets/Logo.png')
 if os.path.exists(image_path):
     image = Image.open(image_path)
     resized_image = image.resize((100, 100))  # Resize to 100x100 pixels

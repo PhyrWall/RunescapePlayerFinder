@@ -25,6 +25,7 @@ root.configure(background='#0f2b5a')
 
 def get_details():
     error_label.grid_forget()
+    error_label_rsn.grid_forget()
     # Make the request to the API
     data = requests.get("https://api.wiseoldman.net/v2/players/"+rsn_search.get())
 
@@ -32,33 +33,32 @@ def get_details():
     if data.status_code == 200:
 
         try:
-            # Parse the response JSON
             response_json = data.json()
 
-            # Get the latest snapshot data
-            latest_snapshot = response_json.get('latestSnapshot', {})
-            skills = latest_snapshot.get('data', {}).get('skills', {})
+            player_data = response_json.get('latestSnapshot', {})
+            player_skills = player_data.get('data', {}).get('skills', {})
 
-            skill = clicked.get().lower()
-            skill_details = skills.get(skill, None)
+            selected_skill = clicked.get().lower()
+            skill_details = player_skills.get(selected_skill, None)
 
             # Check if prayer skill exists and extract its rank
             if skill_details:
                 # Get rank from WOM
                 skill_rank = skill_details.get('rank', 'Rank not found')
-                print(f"{clicked.get()} rank: {skill_rank}")
+                # print(f"{clicked.get()} rank: {skill_rank}")
                 player_rank_input.delete(0,END)
                 player_rank_input.insert(0,f'{skill_rank}')
 
                 # Get rank from WOM
                 skill_experience = skill_details.get('experience', 'Rank not found')
-                print(f"{clicked.get()} experience: {skill_experience}")
+                # print(f"{clicked.get()} experience: {skill_experience}")
                 skill_xp_input.delete(0,END)
                 skill_xp_input.insert(0,f'{skill_experience}')
             else:
-                print("Prayer skill data not found.")
+                print(f"{clicked.get()} skill data not found.")
         except Exception as e:
             print(f"An error occurred while processing the data: {e}")
+            error_label_rsn.grid(row=0, column=2)
     else:
         print(f"Failed to retrieve data. Status code: {data.status_code}")
         error_label.grid(row=0, column=2)
@@ -114,6 +114,7 @@ def hiscore_webscrape(url, target_xp, start_page, rank):
     update_button.configure(state=DISABLED)
     highscore_button.configure(state=DISABLED)
     search_button.configure(state=DISABLED)
+    rsn_search_button.configure(state=DISABLED)
     root.after(0, console_output.insert, END, f"Searching for player\nSkill: {clicked.get()}\nTarget XP: {target_xp}\nEstimated Rank: {rank}\n--------------------\n")
     # Loop through pages, start page is ((rank / 25) + 1) - 6
     for page in range(start_page, start_page + 15):
@@ -152,6 +153,7 @@ def hiscore_webscrape(url, target_xp, start_page, rank):
     search_button.configure(state=NORMAL)
     highscore_button.configure(state=NORMAL)
     update_button.configure(state=NORMAL)
+    rsn_search_button.configure(state=NORMAL)
 
 def check_boxes():
 
@@ -187,8 +189,8 @@ drop.grid(row=0, column=1)
 # Entry fields/labels for player rank
 rsn_search = Entry(root, width=15, bg='#d9d9d9', fg='#000000')  # Light gray input box with black text
 rsn_search.grid(row=1, column=0)
-rsn_search.insert(0, "WOM Search")
-rsn_search_button = Button(root, text="Search WOM", command=get_details, width=20)
+rsn_search.insert(0, "Insert RSN")
+rsn_search_button = Button(root, text="Search WiseOldMan.net", command=get_details, width=20)
 rsn_search_button.grid(row=1, column=1)
 rsn_search_button.configure(background="#c19a6b", foreground="#ffffff", activebackground="#a6805e", activeforeground="#ffffff")
 
@@ -208,7 +210,7 @@ skill_xp_input.insert(0, "")
 skill_xp_input.grid(row=3, column=1)
 
 # Style the button
-search_button = Button(root, text="Search", command=check_boxes, width=20)
+search_button = Button(root, text="Offical Hiscores\nSearch", command=check_boxes, width=20)
 search_button.grid(row=4, column=0, columnspan=3)
 search_button.configure(background="#c19a6b", foreground="#ffffff", activebackground="#a6805e", activeforeground="#ffffff")
 
@@ -222,7 +224,8 @@ console_output.pack(fill=BOTH, expand=True)
 
 # Button setup with your custom styles
 update_button = Button(root,
-                       text="Update Players",
+                       text="Update Players on\n"
+                            "WiseOldMan.net",
                        command=lambda: update_wom(found_players),  # Trigger update_wom with found_players when clicked
                        width=20)
 update_button.grid(row=9, column=0, padx=5)  # Adjust the row, column, and span as needed
@@ -231,7 +234,7 @@ update_button.configure(background="#c19a6b", foreground="#ffffff",
 
 # Button setup with your custom styles
 highscore_button = Button(root,
-                       text="Open Highscores",
+                       text="Open Offical\n Hiscores",
                        command=lambda: open_highscores(found_players),  # Open highscores for all players
                        width=20)
 highscore_button.grid(row=9, column=2, columnspan=2)  # Adjust the row, column, and span as needed
@@ -297,5 +300,6 @@ else:
 
 # Label for when error occurs in the check_boxes function
 error_label = Label(text="Please verify your entries", fg='red')
+error_label_rsn = Label(text="No skill data for RSN", fg='red')
 
 root.mainloop()

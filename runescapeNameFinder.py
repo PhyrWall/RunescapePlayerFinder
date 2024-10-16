@@ -10,27 +10,59 @@ import time
 import tkinter as tk
 import webbrowser
 from tkinter import *
-import sys
 
 import requests
-import wom
+import wom as wom
 from PIL import Image, ImageTk
 from bs4 import BeautifulSoup
 
-# https://stackoverflow.com/questions/31836104/pyinstaller-and-onefile-how-to-include-an-image-in-the-exe-file
-def resource_path(relative_path):
-    try:
-        base_path = sys._MEIPASS2
-    except Exception:
-        base_path = os.path.abspath(".")
-
-    return os.path.join(base_path, relative_path)
-
 root = tk.Tk()
 root.title("Find Runescape Player")
-root.iconbitmap(resource_path('assets\\icon.ico'))
+root.iconbitmap('assets\\icon.ico')
 root.minsize(height=530, width=430)
 root.configure(background='#0f2b5a')
+
+
+def get_details():
+    error_label.grid_forget()
+    # Make the request to the API
+    data = requests.get("https://api.wiseoldman.net/v2/players/"+rsn_search.get())
+
+    # Check if the request was successful
+    if data.status_code == 200:
+
+        try:
+            # Parse the response JSON
+            response_json = data.json()
+
+            # Get the latest snapshot data
+            latest_snapshot = response_json.get('latestSnapshot', {})
+            skills = latest_snapshot.get('data', {}).get('skills', {})
+
+            skill = clicked.get().lower()
+            skill_details = skills.get(skill, None)
+
+            # Check if prayer skill exists and extract its rank
+            if skill_details:
+                # Get rank from WOM
+                skill_rank = skill_details.get('rank', 'Rank not found')
+                print(f"{clicked.get()} rank: {skill_rank}")
+                player_rank_input.delete(0,END)
+                player_rank_input.insert(0,f'{skill_rank}')
+
+                # Get rank from WOM
+                skill_experience = skill_details.get('experience', 'Rank not found')
+                print(f"{clicked.get()} experience: {skill_experience}")
+                skill_xp_input.delete(0,END)
+                skill_xp_input.insert(0,f'{skill_experience}')
+            else:
+                print("Prayer skill data not found.")
+        except Exception as e:
+            print(f"An error occurred while processing the data: {e}")
+    else:
+        print(f"Failed to retrieve data. Status code: {data.status_code}")
+        error_label.grid(row=0, column=2)
+
 
 # Start search player
 def search_player(rank, skil_xp):
@@ -85,7 +117,6 @@ def hiscore_webscrape(url, target_xp, start_page, rank):
     root.after(0, console_output.insert, END, f"Searching for player\nSkill: {clicked.get()}\nTarget XP: {target_xp}\nEstimated Rank: {rank}\n--------------------\n")
     # Loop through pages, start page is ((rank / 25) + 1) - 6
     for page in range(start_page, start_page + 15):
-        print(page)
         response = requests.get(url + str(page))
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -154,27 +185,36 @@ drop.config(width=10, bg='#c19a6b', fg='#ffffff', activebackground='#a6805e', ac
 drop.grid(row=0, column=1)
 
 # Entry fields/labels for player rank
+rsn_search = Entry(root, width=15, bg='#d9d9d9', fg='#000000')  # Light gray input box with black text
+rsn_search.grid(row=1, column=0)
+rsn_search.insert(0, "WOM Search")
+rsn_search_button = Button(root, text="Search WOM", command=get_details, width=20)
+rsn_search_button.grid(row=1, column=1)
+rsn_search_button.configure(background="#c19a6b", foreground="#ffffff", activebackground="#a6805e", activeforeground="#ffffff")
+
+
+# Entry fields/labels for player rank
 player_rank = Label(root, text="Player Rank: ", width=10, fg='#ffffff', bg='#0f2b5a',anchor='w')
-player_rank.grid(row=1, column=0)
+player_rank.grid(row=2, column=0)
 player_rank_input = Entry(root, width=15, bg='#d9d9d9', fg='#000000')  # Light gray input box with black text
-player_rank_input.grid(row=1, column=1)
+player_rank_input.grid(row=2, column=1)
 player_rank_input.insert(0, "")
 
 # Entry fields/labels for skill Xp
 skill_xp = Label(root, text="Skill Xp: ", width=10, fg='#ffffff', bg='#0f2b5a',anchor='w')
-skill_xp.grid(row=2, column=0)
+skill_xp.grid(row=3, column=0)
 skill_xp_input = Entry(root, width=15, bg='#d9d9d9', fg='#000000')  # Light gray input box with black text
 skill_xp_input.insert(0, "")
-skill_xp_input.grid(row=2, column=1)
+skill_xp_input.grid(row=3, column=1)
 
 # Style the button
 search_button = Button(root, text="Search", command=check_boxes, width=20)
-search_button.grid(row=3, column=0, columnspan=3)
+search_button.grid(row=4, column=0, columnspan=3)
 search_button.configure(background="#c19a6b", foreground="#ffffff", activebackground="#a6805e", activeforeground="#ffffff")
 
 # Style for Command Console Label Frame
 console_frame = LabelFrame(root, text="Command Console", padx=5, pady=5, bg='#0f2b5a', fg='#ffffff')
-console_frame.grid(row=4, column=0, columnspan=3, rowspan=4, sticky="nsew")
+console_frame.grid(row=5, column=0, columnspan=3, rowspan=4, sticky="nsew")
 
 # Text widget for console output
 console_output = Text(console_frame, height=20, width=50, wrap=WORD, bg='#d9d9d9', fg='#000000', padx=5)
@@ -185,7 +225,7 @@ update_button = Button(root,
                        text="Update Players",
                        command=lambda: update_wom(found_players),  # Trigger update_wom with found_players when clicked
                        width=20)
-update_button.grid(row=8, column=0, padx=5)  # Adjust the row, column, and span as needed
+update_button.grid(row=9, column=0, padx=5)  # Adjust the row, column, and span as needed
 update_button.configure(background="#c19a6b", foreground="#ffffff",
                         activebackground="#a6805e", activeforeground="#ffffff")
 
@@ -194,15 +234,15 @@ highscore_button = Button(root,
                        text="Open Highscores",
                        command=lambda: open_highscores(found_players),  # Open highscores for all players
                        width=20)
-highscore_button.grid(row=8, column=2, columnspan=2)  # Adjust the row, column, and span as needed
+highscore_button.grid(row=9, column=2, columnspan=2)  # Adjust the row, column, and span as needed
 highscore_button.configure(background="#c19a6b", foreground="#ffffff",
                         activebackground="#a6805e", activeforeground="#ffffff")
 
 discord = Label(root, text="Discord: jhandeeee", fg='#ffffff', bg='#0f2b5a', width=20)
-discord.grid(row=9, column=0, sticky="SW")  # Aligns the label to the left (west)
+discord.grid(row=10, column=0, sticky="SW")  # Aligns the label to the left (west)
 
 rsn = Label(root, text="RSN: PhyrWall, ShinyRedDino",fg='#ffffff', bg='#0f2b5a')
-rsn.grid(row=9, column=2, sticky="SE")  # Aligns the label to the left (west)
+rsn.grid(row=10, column=2, sticky="SE")  # Aligns the label to the left (west)
 
 # Open hiscores for all players found
 def open_highscores(players):
@@ -240,7 +280,7 @@ def update_wom(players):
 
 
 # Handle image loading
-image_path = resource_path('assets/Logo.png')
+image_path = 'assets/Logo.png'
 if os.path.exists(image_path):
     image = Image.open(image_path)
     resized_image = image.resize((100, 100))  # Resize to 100x100 pixels

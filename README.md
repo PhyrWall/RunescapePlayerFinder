@@ -26,11 +26,12 @@ or other sources and need to find their RSN after a double name change.
   - Searching again will erase the last found players
 
 ### 6. GUI Features
-- Users can select a skill from a dropdown menu, input the player’s rank and XP, and search for that player.
-- A command console displays output messages and search results.
-- Buttons to search, update players on WOM, and open hiscores are styled and integrated into the GUI.
+- Users can select a skill from a dropdown menu, input the player’s rank and XP, and search for that player. Users can now search for a RSN on WOM to pull the most recent data.
+- A console displays output messages and search results.
+- Buttons to search offical hiscores for player with xp, update players on WOM, and open hiscores are styled and integrated into the GUI.
   
-![img](https://github.com/user-attachments/assets/8db3099c-e33d-4023-b20a-2eadfec1723b)
+![python_XO1HmPxt4d](https://github.com/user-attachments/assets/52f4a387-c908-498f-92bc-c5f08b01243f)
+
 
 ## Requirements
 

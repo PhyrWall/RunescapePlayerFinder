@@ -117,7 +117,7 @@ def hiscore_webscrape(url, target_xp, start_page, rank):
     rsn_search_button.configure(state=DISABLED)
     root.after(0, console_output.insert, END, f"Searching for player\nSkill: {clicked.get()}\nTarget XP: {target_xp}\nEstimated Rank: {rank}\n--------------------\n")
     # Loop through pages, start page is ((rank / 25) + 1) - 6
-    for page in range(start_page, start_page + 15):
+    for page in range(start_page - 10, start_page + 25):
         response = requests.get(url + str(page))
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, 'html.parser')

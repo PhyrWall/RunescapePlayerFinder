@@ -17,7 +17,7 @@ from PIL import Image, ImageTk
 from bs4 import BeautifulSoup
 
 root = tk.Tk()
-root.title("Find Runescape Player")
+root.title("Runescape Player Finder")
 root.iconbitmap('assets\\icon.ico')
 root.minsize(height=530, width=430)
 root.configure(background='#0f2b5a')
@@ -26,7 +26,7 @@ root.configure(background='#0f2b5a')
 def get_details():
     error_label.grid_forget()
     error_label_rsn.grid_forget()
-    # Make the request to the API
+
     data = requests.get("https://api.wiseoldman.net/v2/players/"+rsn_search.get())
 
     # Check if the request was successful
@@ -38,10 +38,11 @@ def get_details():
             player_data = response_json.get('latestSnapshot', {})
             player_skills = player_data.get('data', {}).get('skills', {})
 
-            selected_skill = clicked.get().lower()
-            skill_details = player_skills.get(selected_skill, None)
+            selected_skill = clicked.get()
+            selected_skill_lower = selected_skill.lower()
 
-            # Check if prayer skill exists and extract its rank
+            skill_details = player_skills.get(selected_skill_lower, None)
+            # If skill exsists get data
             if skill_details:
                 # Get rank from WOM
                 skill_rank = skill_details.get('rank', 'Rank not found')
@@ -88,7 +89,7 @@ def search_player(rank, skil_xp):
                    'Thieving': 18,
                    'Slayer': 19,
                    'Farming': 20,
-                   'Runecraft': 21,
+                   'Runecrafting': 21,
                    'Hunter': 22,
                    'Construction': 23}
 
@@ -171,7 +172,7 @@ found_players = []
 skill_choices = [
     'Agility', 'Attack', 'Construction', 'Cooking', 'Crafting', 'Defence',
     'Farming', 'Firemaking', 'Fishing', 'Fletching', 'Herblore', 'Hitpoints',
-    'Hunter', 'Magic', 'Mining', 'Prayer', 'Ranged', 'Runecraft',
+    'Hunter', 'Magic', 'Mining', 'Prayer', 'Ranged', 'Runecrafting',
     'Slayer', 'Smithing', 'Strength', 'Thieving', 'Woodcutting'
 ]
 clicked = StringVar()

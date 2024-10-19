@@ -4,11 +4,9 @@ and interact with the Wise Old Man API for player updates. Developed by PhyrWall
 """
 
 import asyncio
-import csv
 import os
 import threading
 import time
-from io import StringIO
 from tkinter import *
 import webbrowser
 
@@ -106,11 +104,10 @@ def search_player(rank, skil_xp):
     starting_page = int(rank / 25) + 1 - 6
     if starting_page < 0:
         starting_page = 1
-    if ironman == True:
+    if ironman:
         url = f'https://secure.runescape.com/m=hiscore_oldschool_ironman/overall?table={runescape_skills[clicked.get()]}&page='
     else:
         url = f'https://secure.runescape.com/m=hiscore_oldschool/overall?table={runescape_skills[clicked.get()]}&page='
-    print(url)
 
     # Run the search in a daemon thread
     thread = threading.Thread(target=hiscore_webscrape, args=(url, xp, starting_page, rank))
@@ -211,8 +208,7 @@ drop.grid(row=0, column=1)
 # Entry fields/labels for player rank
 rsn_search = Entry(root, width=15, bg='#d9d9d9', fg='#000000')
 rsn_search.grid(row=1, column=0)
-# rsn_search.insert(0, "Insert RSN")
-rsn_search.insert(0, "PhyrWall")
+rsn_search.insert(0, "Insert RSN")
 rsn_search_button = Button(root, text="Search WiseOldMan.net", command=get_details, width=20)
 rsn_search_button.grid(row=1, column=1)
 rsn_search_button.configure(background="#c19a6b", foreground="#ffffff", activebackground="#a6805e", activeforeground="#ffffff")

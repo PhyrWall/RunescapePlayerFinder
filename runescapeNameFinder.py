@@ -23,8 +23,8 @@ root.iconbitmap('assets\\icon.ico')
 root.minsize(height=530, width=430)
 root.configure(background='#0f2b5a')
 
-client_wom = wom.Client(api_base_url="localhost")
-# client_wom = wom.Client(api_base_url="https://api.wiseoldman.net/v2")
+
+client_wom = wom.Client(api_base_url="https://api.wiseoldman.net/v2")
 
 def get_details():
     error_label.grid_forget()
@@ -32,7 +32,6 @@ def get_details():
     runescape_name = rsn_search.get()
 
     data = requests.get("https://api.wiseoldman.net/v2/players/"+runescape_name)
-    print(data.url)
 
     # Check if the request was successful
     if data.status_code == 200:
@@ -124,6 +123,8 @@ def hiscore_webscrape(url, target_xp, page, rank):
 
     # Disable buttons while running
     disable_buttons()
+
+    # Determine starting page number
     if page-10 <= 1:
         start_page = 1
         print(start_page)
@@ -166,7 +167,6 @@ def hiscore_webscrape(url, target_xp, page, rank):
 
     # Return usage to buttons
     enable_buttons()
-    print(found_players)
 
 def check_boxes():
 
@@ -217,8 +217,7 @@ drop.grid(row=0, column=1)
 # Entry fields/labels for player rank
 rsn_search = Entry(root, width=15, bg='#d9d9d9', fg='#000000')
 rsn_search.grid(row=1, column=0)
-# rsn_search.insert(0, "Insert RSN")
-rsn_search.insert(0, "PhyrWall")
+rsn_search.insert(0, "Insert RSN")
 rsn_search_button = Button(root, text="Search WiseOldMan.net", command=get_details, width=20)
 rsn_search_button.grid(row=1, column=1)
 rsn_search_button.configure(background="#c19a6b", foreground="#ffffff", activebackground="#a6805e", activeforeground="#ffffff")
@@ -347,8 +346,10 @@ def disable_buttons():
     ironman_button.configure(state=DISABLED)
     compare_button.configure(state=DISABLED)
     drop.config(state=DISABLED)
+    rsn_search.config(state=DISABLED)
 
 def enable_buttons():
+    rsn_search.configure(state=NORMAL)
     update_button.configure(state=NORMAL)
     highscore_button.configure(state=NORMAL)
     search_button.configure(state=NORMAL)
@@ -404,7 +405,6 @@ class PlayerHiscore:
         if ironman:
             url = f"https://secure.runescape.com/m=hiscore_oldschool_ironman/index_lite.ws?player={self.player_name}"
         response = requests.get(url)
-        print(f"Fetching data from: {url}")
         if response.status_code != 200:
             print(f"Failed to fetch data for {self.player_name}. Status code: {response.status_code}")
             return None
@@ -453,10 +453,10 @@ def compare_players_skills(original_player, found_player):
         skills_compared +=1
         # If player level is equal to found level 0.2 points
         if original_level == found_level:
-            match_score += 0.2
+            match_score += 0.4
             # If player xp is equal to found xp 0.8 points (higher points due to not as likely to change varience)
             if original_experience == found_experience:
-                match_score += 0.8
+                match_score += 0.6
             # If level is not same but within 5k xp, give 0.3 points
         # If both experiences are None or invalid (-1), give 1 point
         elif original_experience in [None, -1] or found_experience in [None, -1]:
@@ -475,7 +475,7 @@ def compare_players_skills(original_player, found_player):
 
 # Find matches between the original player and found players
 def find_matches_with_percentage(original_player_name):
-    original_player = PlayerHiscore(original_player_name, from_wom=True)  # Get original player from WOM
+    original_player = PlayerHiscore(original_player_name, from_wom=True)  # Original player from WOM
 
     match_results = {}
     for player_name in found_players:
@@ -488,16 +488,16 @@ def find_matches_with_percentage(original_player_name):
 
 # Fetch names and display results
 def fetch_compare_display_matches():
-    original_player_name = rsn_search.get()  # Get the original player name from the input field
+    original_player_name = rsn_search.get()
     match_results = find_matches_with_percentage(original_player_name)
 
-
-    root.after(0, console_output.insert, END, f"Matches for {original_player_name}")
+    root.after(0, console_output.insert, END, f"Matches for {original_player_name}:\n")
 
     # Output names into console
     for player, match_p in match_results.items():
-        if match_p >= 10:
-            root.after(0, console_output.insert, END, f"Match for {player}: {match_p:.2f}%\n")
+        print(f"{player}: {match_p:.2f}%\n")
+        if match_p >= 75:
+            root.after(0, console_output.insert, END, f"{player}: {match_p:.2f}%\n")
             root.after(0, console_output.see, END)  # Scroll to the end of the text box
 
 

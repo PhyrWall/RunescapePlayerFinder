@@ -111,7 +111,6 @@ def search_player(rank, skil_xp):
         url = f'https://secure.runescape.com/m=hiscore_oldschool_ironman/overall?table={runescape_skills[clicked.get()]}&page='
     else:
         url = f'https://secure.runescape.com/m=hiscore_oldschool/overall?table={runescape_skills[clicked.get()]}&page='
-    print(url)
 
     # Run the search in a daemon thread
     thread = threading.Thread(target=hiscore_webscrape, args=(url, xp, starting_page, rank))

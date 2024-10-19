@@ -4,9 +4,12 @@ and interact with the Wise Old Man API for player updates. Developed by PhyrWall
 """
 
 import asyncio
+import csv
 import os
 import threading
 import time
+from cProfile import label
+from io import StringIO
 from tkinter import *
 import webbrowser
 
@@ -104,10 +107,11 @@ def search_player(rank, skil_xp):
     starting_page = int(rank / 25) + 1 - 6
     if starting_page < 0:
         starting_page = 1
-    if ironman:
+    if ironman == True:
         url = f'https://secure.runescape.com/m=hiscore_oldschool_ironman/overall?table={runescape_skills[clicked.get()]}&page='
     else:
         url = f'https://secure.runescape.com/m=hiscore_oldschool/overall?table={runescape_skills[clicked.get()]}&page='
+    print(url)
 
     # Run the search in a daemon thread
     thread = threading.Thread(target=hiscore_webscrape, args=(url, xp, starting_page, rank))
@@ -208,7 +212,8 @@ drop.grid(row=0, column=1)
 # Entry fields/labels for player rank
 rsn_search = Entry(root, width=15, bg='#d9d9d9', fg='#000000')
 rsn_search.grid(row=1, column=0)
-rsn_search.insert(0, "Insert RSN")
+# rsn_search.insert(0, "Insert RSN")
+rsn_search.insert(0, "PhyrWall")
 rsn_search_button = Button(root, text="Search WiseOldMan.net", command=get_details, width=20)
 rsn_search_button.grid(row=1, column=1)
 rsn_search_button.configure(background="#c19a6b", foreground="#ffffff", activebackground="#a6805e", activeforeground="#ffffff")
@@ -260,6 +265,15 @@ update_button.configure(background="#c19a6b", foreground="#ffffff",
                         activebackground="#a6805e", activeforeground="#ffffff")
 
 # Button setup with your custom styles
+verify_search = Button(root,
+                          text="Verify\nUsers",
+                          command=lambda: open_popup(),  # Open highscores for all players
+                          width=20)
+verify_search.grid(row=9, column=1)  # Adjust the row, column, and span as needed
+verify_search.configure(background="#c19a6b", foreground="#ffffff",
+                           activebackground="#a6805e", activeforeground="#ffffff")
+
+# Button setup with your custom styles
 highscore_button = Button(root,
                        text="Open Offical\n Hiscores",
                        command=lambda: open_highscores(found_players),  # Open highscores for all players
@@ -307,6 +321,210 @@ def update_wom(players):
     thread.daemon = True  # Daemon threads will exit when the main program exits
     thread.start()
 
+def open_popup():
+    verify_win = Toplevel(root)
+    verify_win.geometry("800x325")
+    verify_win.title("Verify Player")
+    verify_win.config(bg="#0f2b5a")
+
+    verify_player = Label(verify_win, text="Found Player Search", bg="#0f2b5a", font=("Arial",16))
+    verify_player.grid(row=0, column=0, columnspan=7, pady=(5, 10))
+
+    # Images pulled from WiseOldMan.net
+    attack_image = PhotoImage(file="assets/metrics/attack.png")
+    strength_image = PhotoImage(file="assets/metrics/strength.png")
+    defence_image = PhotoImage(file="assets/metrics/defence.png")
+    ranged_image = PhotoImage(file="assets/metrics/ranged.png")
+    prayer_image = PhotoImage(file="assets/metrics/prayer.png")
+    magic_image = PhotoImage(file="assets/metrics/magic.png")
+    runecrafting_image = PhotoImage(file="assets/metrics/runecrafting.png")
+    construction_image = PhotoImage(file="assets/metrics/construction.png")
+    hitpoints_image = PhotoImage(file="assets/metrics/hitpoints.png")
+    agility_image = PhotoImage(file="assets/metrics/agility.png")
+    herblore_image = PhotoImage(file="assets/metrics/herblore.png")
+    thieving_image = PhotoImage(file="assets/metrics/thieving.png")
+    crafting_image = PhotoImage(file="assets/metrics/crafting.png")
+    fletching_image = PhotoImage(file="assets/metrics/fletching.png")
+    slayer_image = PhotoImage(file="assets/metrics/slayer.png")
+    hunter_image = PhotoImage(file="assets/metrics/hunter.png")
+    mining_image = PhotoImage(file="assets/metrics/mining.png")
+    smithing_image = PhotoImage(file="assets/metrics/smithing.png")
+    fishing_image = PhotoImage(file="assets/metrics/fishing.png")
+    cooking_image = PhotoImage(file="assets/metrics/cooking.png")
+    firemaking_image = PhotoImage(file="assets/metrics/firemaking.png")
+    woodcutting_image = PhotoImage(file="assets/metrics/woodcutting.png")
+    farming_image = PhotoImage(file="assets/metrics/farming.png")
+
+
+    # Skill Column 1
+    attack_label = Label(verify_win, image=attack_image, bg="#0f2b5a")
+    attack_label.grid(row=2, column=0, padx=2, pady=2)
+    attack_label.image = attack_image
+    attack_level_entry = Entry(verify_win, width=15, bg='#d9d9d9', fg='#000000')
+    attack_level_entry.grid( row=2,column=1, padx=2, pady=2)
+
+    strength_label = Label(verify_win, image=strength_image, bg="#0f2b5a")
+    strength_label.grid(row=3, column=0, padx=2, pady=2)
+    strength_label.image = strength_image
+    strength_level_entry = Entry(verify_win, width=15, bg='#d9d9d9', fg='#000000')
+    strength_level_entry.grid( row=3,column=1, padx=2, pady=2)
+
+    defence_label = Label(verify_win, image=defence_image, bg="#0f2b5a")
+    defence_label.grid(row=4, column=0, padx=2, pady=2)
+    defence_label.image = defence_image
+    defence_level_entry = Entry(verify_win, width=15, bg='#d9d9d9', fg='#000000')
+    defence_level_entry.grid( row=4,column=1, padx=2, pady=2)
+
+    ranged_label = Label(verify_win, image=ranged_image, bg="#0f2b5a")
+    ranged_label.grid(row=5, column=0, padx=2, pady=2)
+    ranged_label.image = ranged_image
+    ranged_level_entry = Entry(verify_win, width=15, bg='#d9d9d9', fg='#000000')
+    ranged_level_entry.grid( row=5,column=1, padx=2, pady=2)
+
+    prayer_label = Label(verify_win, image=prayer_image, bg="#0f2b5a")
+    prayer_label.grid(row=6, column=0, padx=2, pady=2)
+    prayer_label.image = prayer_image
+    prayer_level_entry = Entry(verify_win, width=15, bg='#d9d9d9', fg='#000000')
+    prayer_level_entry.grid( row=6, column=1, padx=2, pady=2)
+
+    magic_label = Label(verify_win, image=magic_image, bg="#0f2b5a")
+    magic_label.grid(row=7, column=0, padx=2, pady=2)
+    magic_label.image = magic_image
+    magic_level_entry = Entry(verify_win, width=15, bg='#d9d9d9', fg='#000000')
+    magic_level_entry.grid( row=7,column=1, padx=2, pady=2)
+
+    runecrafting_label = Label(verify_win, image=runecrafting_image, bg="#0f2b5a")
+    runecrafting_label.grid(row=8, column=0, padx=2, pady=2)
+    runecrafting_label.image = runecrafting_image
+    runecrafting_level_entry = Entry(verify_win, width=15, bg='#d9d9d9', fg='#000000')
+    runecrafting_level_entry.grid( row=8,column=1, padx=2, pady=2)
+
+    construction_label = Label(verify_win, image=construction_image, bg="#0f2b5a")
+    construction_label.grid(row=9, column=0, padx=2, pady=2)
+    construction_label.image = construction_image
+    construction_level_entry = Entry(verify_win, width=15, bg='#d9d9d9', fg='#000000')
+    construction_level_entry.grid( row=9,column=1, padx=2, pady=2)
+
+
+    # Skill Column 2
+    hitpoints_label = Label(verify_win, image=hitpoints_image, bg="#0f2b5a")
+    hitpoints_label.grid(row=2, column=2, padx=2, pady=2)
+    hitpoints_label.image = hitpoints_image
+    hitpoints_level_entry = Entry(verify_win, width=15, bg='#d9d9d9', fg='#000000')
+    hitpoints_level_entry.grid( row=2,column=3, padx=2, pady=2)
+
+    agility_label = Label(verify_win, image=agility_image, bg="#0f2b5a")
+    agility_label.grid(row=3, column=2, padx=2, pady=2)
+    agility_label.image = agility_image
+    agility_level_entry = Entry(verify_win, width=15, bg='#d9d9d9', fg='#000000')
+    agility_level_entry.grid( row=3,column=3, padx=2, pady=2)
+
+    herblore_label = Label(verify_win, image=herblore_image, bg="#0f2b5a")
+    herblore_label.grid(row=4, column=2, padx=2, pady=2)
+    herblore_label.image = herblore_image
+    herblore_level_entry = Entry(verify_win, width=15, bg='#d9d9d9', fg='#000000')
+    herblore_level_entry.grid( row=4,column=3, padx=2, pady=2)
+
+    thieving_label = Label(verify_win, image=thieving_image, bg="#0f2b5a")
+    thieving_label.grid(row=5, column=2, padx=2, pady=2)
+    thieving_label.image = thieving_image
+    thieving_level_entry = Entry(verify_win, width=15, bg='#d9d9d9', fg='#000000')
+    thieving_level_entry.grid( row=5,column=3, padx=2, pady=2)
+
+    crafting_label = Label(verify_win, image=crafting_image, bg="#0f2b5a")
+    crafting_label.grid(row=6, column=2, padx=2, pady=2)
+    crafting_label.image = crafting_image
+    crafting_level_entry = Entry(verify_win, width=15, bg='#d9d9d9', fg='#000000')
+    crafting_level_entry.grid(row=6, column=3, padx=2, pady=2)
+
+    fletching_label = Label(verify_win, image=fletching_image, bg="#0f2b5a")
+    fletching_label.grid(row=7, column=2, padx=2, pady=2)
+    fletching_label.image = fletching_image
+    fletching_level_entry = Entry(verify_win, width=15, bg='#d9d9d9', fg='#000000')
+    fletching_level_entry.grid( row=7,column=3, padx=2, pady=2)
+
+    slayer_label = Label(verify_win, image=slayer_image, bg="#0f2b5a")
+    slayer_label.grid(row=8, column=2, padx=2, pady=2)
+    slayer_label.image = slayer_image
+    slayer_level_entry = Entry(verify_win, width=15, bg='#d9d9d9', fg='#000000')
+    slayer_level_entry.grid( row=8,column=3, padx=2, pady=2)
+
+    hunter_label = Label(verify_win, image=hunter_image, bg="#0f2b5a")
+    hunter_label.grid(row=9, column=2, padx=2, pady=2)
+    hunter_label.image = hunter_image
+    hunter_level_entry = Entry(verify_win, width=15, bg='#d9d9d9', fg='#000000')
+    hunter_level_entry.grid( row=9,column=3, padx=2, pady=2)
+
+    # Skill Column 3
+    mining_label = Label(verify_win, image=mining_image, bg="#0f2b5a")
+    mining_label.grid(row=2, column=4, padx=2, pady=2)
+    mining_label.image = mining_image
+    mining_level_entry = Entry(verify_win, width=15, bg='#d9d9d9', fg='#000000')
+    mining_level_entry.grid( row=2,column=5, padx=2, pady=2)
+
+    smithing_label = Label(verify_win, image=smithing_image, bg="#0f2b5a")
+    smithing_label.grid(row=3, column=4, padx=2, pady=2)
+    smithing_label.image = smithing_image
+    smithing_level_entry = Entry(verify_win, width=15, bg='#d9d9d9', fg='#000000')
+    smithing_level_entry.grid( row=3, column=5, padx=2, pady=2)
+
+    fishing_label = Label(verify_win, image=fishing_image, bg="#0f2b5a")
+    fishing_label.grid(row=4, column=4, padx=2, pady=2)
+    fishing_label.image = fishing_image
+    fishing_level_entry = Entry(verify_win, width=15, bg='#d9d9d9', fg='#000000')
+    fishing_level_entry.grid( row=4,column=5, padx=2, pady=2)
+
+    cooking_label = Label(verify_win, image=cooking_image, bg="#0f2b5a")
+    cooking_label.grid(row=5, column=4, padx=2, pady=2)
+    cooking_label.image = cooking_image
+    cooking_level_entry = Entry(verify_win, width=15, bg='#d9d9d9', fg='#000000')
+    cooking_level_entry.grid( row=5,column=5, padx=2, pady=2)
+
+    firemaking_label = Label(verify_win, image=firemaking_image, bg="#0f2b5a")
+    firemaking_label.grid(row=6, column=4, padx=2, pady=2)
+    firemaking_label.image = firemaking_image
+    firemaking_level_entry = Entry(verify_win, width=15, bg='#d9d9d9', fg='#000000')
+    firemaking_level_entry.grid(row=6, column=5, padx=2, pady=2)
+
+    woodcutting_label = Label(verify_win, image=woodcutting_image, bg="#0f2b5a")
+    woodcutting_label.grid(row=7, column=4, padx=2, pady=2)
+    woodcutting_label.image = woodcutting_image
+    woodcutting_level_entry = Entry(verify_win, width=15, bg='#d9d9d9', fg='#000000')
+    woodcutting_level_entry.grid(row=7,column=5, padx=2, pady=2)
+
+    farming_label = Label(verify_win, image=farming_image, bg="#0f2b5a")
+    farming_label.grid(row=8, column=4, padx=2, pady=2)
+    farming_label.image = farming_image
+    farming_level_entry = Entry(verify_win, width=15, bg='#d9d9d9', fg='#000000')
+    farming_level_entry.grid(row=8,column=5, padx=2, pady=2)
+
+    verify_button = Button(verify_win,
+                              text="Player Search",
+                              command=verify_players,
+                              width=20)
+    verify_button.grid(row=10, column=0, columnspan=6)
+    verify_button.configure(background="#c19a6b", foreground="#ffffff",
+                               activebackground="#a6805e", activeforeground="#ffffff")
+
+    # Console Frame setup
+    console_frame = LabelFrame(verify_win, text="Command Console", bg='#0f2b5a', fg='#ffffff')
+
+    # Position the console to the right side of the text inputs
+    console_frame.grid(row=2, column=6, rowspan=9, sticky="nsew", padx=5, pady=5)
+
+    # Configure the columns to expand properly (optional but recommended for better layout)
+    verify_win.grid_columnconfigure(6, weight=1)  # Allow the console frame to expand when window is resized
+    verify_win.grid_rowconfigure(2, weight=1)  # Adjusting for all rows where the console spans
+
+    # Text widget for console output
+    console_output = Text(console_frame, height=20, width=40, wrap=WORD, bg='#d9d9d9', fg='#000000')
+    console_output.pack(fill=BOTH, expand=True)
+
+
+def verify_players():
+    print(found_players)
+    hiscore_player_dict()
+
 # Handle image loading
 image_path = 'assets/Logo.png'
 if os.path.exists(image_path):
@@ -324,12 +542,14 @@ else:
     print(f"Error: {image_path} not found. Please check the file path.")
 
 
+
 def disable_buttons():
     update_button.configure(state=DISABLED)
     highscore_button.configure(state=DISABLED)
     search_button.configure(state=DISABLED)
     rsn_search_button.configure(state=DISABLED)
     ironman_button.configure(state=DISABLED)
+    verify_search.configure(state=DISABLED)
     drop.config(state=DISABLED)
 
 def enable_buttons():
@@ -338,7 +558,38 @@ def enable_buttons():
     search_button.configure(state=NORMAL)
     rsn_search_button.configure(state=NORMAL)
     ironman_button.configure(state=NORMAL)
+    verify_search.configure(state=NORMAL)
     drop.config(state=NORMAL)
+
+def hiscore_player_dict():
+    for player_name in found_players:
+        url = f"https://secure.runescape.com/m=hiscore_oldschool/index_lite.ws?player={player_name}"
+
+        response = requests.get(url)
+        if response.status_code != 200:
+            return None
+
+        hiscore_dict = {}
+        skills = [
+            'Overall', 'Attack', 'Defence', 'Strength', 'Hitpoints', 'Ranged', 'Prayer', 'Magic', 'Cooking',
+            'Woodcutting', 'Fletching', 'Fishing', 'Firemaking', 'Crafting', 'Smithing', 'Mining', 'Herblore',
+            'Agility', 'Thieving', 'Slayer', 'Farming', 'Runecrafting', 'Hunter', 'Construction'
+        ]
+
+        player_data = StringIO(response.text)
+        reader = csv.reader(player_data)
+
+        for i, row in enumerate(reader):
+            if i < len(skills):
+            # Assign data to the corresponding skill
+             hiscore_dict[skills[i]] = {
+                'rank': int(row[0]),
+                'level': int(row[1]),
+                'experience': int(row[2])
+            }
+        print(hiscore_dict)
+        return hiscore_dict
+
 
 # Label for when error occurs in the check_boxes function
 error_label = Label(text="Please verify your entries", fg='red')

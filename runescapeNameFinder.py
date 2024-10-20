@@ -127,7 +127,6 @@ def hiscore_webscrape(url, target_xp, page, rank):
     # Determine starting page number
     if page-10 <= 1:
         start_page = 1
-        print(start_page)
     else:
         start_page = int(rank/25)-10
 

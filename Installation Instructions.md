@@ -61,7 +61,7 @@ Follow these steps to install Python, clone the repository, create a virtual env
      source .venv/bin/activate
      ```
 
-3. You should see `(venv)` at the beginning of your terminal prompt, indicating the virtual environment is active.
+3. You should see `(.venv)` at the beginning of your terminal prompt, indicating the virtual environment is active.
 
 ### Step 5: Install Required Dependencies
 1. After activating the virtual environment, install the project dependencies by running:

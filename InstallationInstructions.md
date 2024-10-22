@@ -36,30 +36,29 @@ Follow these steps to install Python, clone the repository, create a virtual env
 2. Navigate to the directory where you want to store the project.
 3. Use the following command to clone the repository:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/PhyrWall/RunescapePlayerFinder.git
    ```
-   Replace `<repository-url>` with the actual URL of your repository (e.g., `https://github.com/your-username/your-repo.git`).
 
 4. After cloning, navigate to the project folder:
    ```bash
-   cd your-repo-folder
+   cd RunescapePlayerFinder
    ```
 
 ### Step 4: Create a Virtual Environment
 1. In the terminal, inside the project directory, create a virtual environment with the following command:
    ```bash
-   python -m venv venv
+   python -m venv .venv
    ```
    This will create a virtual environment in a folder named `venv`.
 
 2. **Activate the Virtual Environment**:
    - On **Windows**:
      ```bash
-     venv\Scripts\activate
+     .venv\Scripts\activate
      ```
    - On **macOS/Linux**:
      ```bash
-     source venv/bin/activate
+     source .venv/bin/activate
      ```
 
 3. You should see `(venv)` at the beginning of your terminal prompt, indicating the virtual environment is active.

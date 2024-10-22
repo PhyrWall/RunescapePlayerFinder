@@ -1,9 +1,10 @@
 """
 GUI tool to search for Old School RuneScape players (based on their rank/xp), track their rank and XP in specific skills,
 and interact with the Wise Old Man API for player updates. Developed by PhyrWall
+All Images were pulled from the WiseOldMan GitHub.
+https://github.com/wise-old-man/wise-old-man/tree/master/app/public/img/metrics
 """
 
-import asyncio
 import os
 import threading
 import time
@@ -67,10 +68,10 @@ def get_details():
         error_label.grid(row=0, column=2)
 
 def clear_console():
-    # Clear all the text in the Text widget
+    # Clear all the text
     console_output.delete(1.0, END)
 
-# Start search player
+# Start searching for player (getting data from widgets)
 def search_player(rank, skil_xp):
     clear_console()
     # All skills
@@ -106,17 +107,19 @@ def search_player(rank, skil_xp):
     page = int(rank / 25) -  6
     if page <= 0:
         page = 1
-    if ironman:
+    if mode == 1: # Ironman
         url = f'https://secure.runescape.com/m=hiscore_oldschool_ironman/overall?table={runescape_skills[clicked.get()]}&page='
-    else:
+    elif mode == 2: # HC Ironman
+        url = f'https://secure.runescape.com/m=hiscore_oldschool_hardcore_ironman/overall?table={runescape_skills[clicked.get()]}&page='
+    else: # Main
         url = f'https://secure.runescape.com/m=hiscore_oldschool/overall?table={runescape_skills[clicked.get()]}&page='
 
     # Run the search in a daemon thread
     thread = threading.Thread(target=hiscore_webscrape, args=(url, xp, page, rank))
-    thread.daemon = True  # Set the thread as a daemon so it will exit when the main program exits
+    thread.daemon = True
     thread.start()
 
-# Function to webscrape the hiscores
+# webscrape the hiscores
 def hiscore_webscrape(url, target_xp, page, rank):
 
     found_players.clear()
@@ -128,10 +131,21 @@ def hiscore_webscrape(url, target_xp, page, rank):
     if page-10 <= 1:
         start_page = 1
     else:
-        start_page = int(rank/25)-10
+        start_page = int(rank/25)-2
 
-    end_page = start_page + 15
-    root.after(0, console_output.insert, END, f"Searching for player\nSkill: {clicked.get()}\nTarget XP: {target_xp}\nEstimated Rank: {rank}\nIronman: {ironman}\n--------------------\n")
+    end_page = start_page + 7
+
+    # Declare account type
+    account_type = mode
+    if account_type == 0:
+        account_type = "Main"
+    elif account_type == 1:
+        account_type = "Ironman"
+    else:
+        account_type = "Hardcore Ironman"
+
+
+    root.after(0, console_output.insert, END, f"Searching for player\nSkill: {clicked.get()}\nTarget XP: {target_xp}\nEstimated Rank: {rank}\nAccount type: {account_type}\n--------------------\n")
     for page in range(start_page, end_page):
         response = requests.get(url + str(page))
         if response.status_code == 200:
@@ -178,20 +192,20 @@ def check_boxes():
         error_label.grid(row=0, column=2)  # Show error label on input error
         print(f"Input error: {e}")
 
-
-ironman = False  # Starts as False (main account)
-
-
+# Starts as main account (0 = Main, 1 = Ironman, 2 = Hardcore Ironman)
+mode = 0
 def toggle_ironman():
-    global ironman
-    ironman = not ironman  # Toggle the ironman variable
+    global mode
 
-    # Update the button text to reflect the new state
-    if ironman:
-        ironman_button.config(text="Ironman", bg='#7A7977', activebackground='#7A7977')
-    else:
+    mode = (mode + 1) % 3
+
+    # Button text and appearance based on the current mode
+    if mode == 0:
         ironman_button.config(text="Main", bg='#4169E1', activebackground='#4169E1')
-
+    elif mode == 1:
+        ironman_button.config(text="Ironman", bg='#7A7977', activebackground='#7A7977')
+    elif mode == 2:
+        ironman_button.config(text="Hardcore Ironman", bg='#FF4500', activebackground='#FF4500')
 
 found_players = []
 
@@ -204,11 +218,10 @@ skill_choices = [
 clicked = StringVar()
 clicked.set(skill_choices[1])
 
-# Set up the GUI layout with consistent background color
-player_skill = Label(root, text="Player Skill: ", width=10, fg='#ffffff', bg='#0f2b5a',anchor='w')  # White text on dark blue background
+player_skill = Label(root, text="Player Skill: ", width=10, fg='#ffffff', bg='#0f2b5a',anchor='w')
 player_skill.grid(row=0, column=0)
 
-# Style for the OptionMenu
+# Style for the drop-down menu
 drop = OptionMenu(root, clicked, *skill_choices)
 drop.config(width=10, bg='#c19a6b', fg='#ffffff', activebackground='#a6805e', activeforeground='#ffffff')
 drop.grid(row=0, column=1)
@@ -216,11 +229,10 @@ drop.grid(row=0, column=1)
 # Entry fields/labels for player rank
 rsn_search = Entry(root, width=15, bg='#d9d9d9', fg='#000000')
 rsn_search.grid(row=1, column=0)
-rsn_search.insert(0, "Insert RSN")
+rsn_search.insert(0, "RSN")
 rsn_search_button = Button(root, text="Search WiseOldMan.net", command=get_details, width=20)
 rsn_search_button.grid(row=1, column=1)
 rsn_search_button.configure(background="#c19a6b", foreground="#ffffff", activebackground="#a6805e", activeforeground="#ffffff")
-
 
 # Entry fields/labels for player rank
 player_rank = Label(root, text="Player Rank: ", width=10, fg='#ffffff', bg='#0f2b5a',anchor='w')
@@ -245,7 +257,7 @@ search_button.configure(background="#c19a6b", foreground="#ffffff", activebackgr
 
 
 # Button to toggle ironman status
-ironman_button = Button(root, text="Main", width=20, bg='#4169E1', fg='#ffffff',
+ironman_button = Button(root, text="Main", width=15, bg='#4169E1', fg='#ffffff',
                         activebackground='#4169E1', activeforeground='#ffffff', command=toggle_ironman)
 ironman_button.grid(row=4, column=0)
 
@@ -256,18 +268,6 @@ console_frame.grid(row=5, column=0, columnspan=3, rowspan=4, sticky="nsew")
 # Text widget for console output
 console_output = Text(console_frame, height=20, width=50, wrap=WORD, bg='#d9d9d9', fg='#000000', padx=5)
 console_output.pack(fill=BOTH, expand=True)
-
-# Button setup with your custom styles
-update_button = Button(root,
-                       text="Update Players on\n"
-                            "WiseOldMan.net",
-                       command=lambda: update_wom(found_players),  # Trigger update_wom with found_players when clicked
-                       width=20)
-update_button.grid(row=9, column=0, padx=5)  # Adjust the row, column, and span as needed
-update_button.configure(background="#c19a6b", foreground="#ffffff",
-                        activebackground="#a6805e", activeforeground="#ffffff")
-
-
 
 # Button setup with your custom styles
 highscore_button = Button(root,
@@ -292,53 +292,22 @@ def open_highscores(players):
             time.sleep(0.2)
         open(base_url + str(runescape_rsn))
 
-# Update players on wiseoldman
-async def update_wom_async(players):
-    update_button.configure(state=DISABLED)
-    search_button.configure(state=DISABLED)
-    highscore_button.configure(state=DISABLED)
-    # await client_wom.start()
-    root.after(0, console_output.insert, END, f"Updating {len(players)} players on Wiseoldman.net\n"
-                                              f"There will be a 3 second delay between each player being updated")
-    for player in players:
-        await client_wom.players.update_player(player)
-        time.sleep(3)
-        root.after(0, console_output.insert, END, f"{player} updated\n")
-    # await client_wom.close()
-    update_button.configure(state=NORMAL)
-    search_button.configure(state=NORMAL)
-    highscore_button.configure(state=NORMAL)
-
-def update_wom(players):
-    def run_update():
-        asyncio.run(update_wom_async(players))  # Run the async function in the thread
-
-    thread = threading.Thread(target=run_update)
-    thread.daemon = True  # Daemon threads will exit when the main program exits
-    thread.start()
-
-def verify_players():
-    pass
-
-# Handle image loading
 image_path = 'assets/Logo.png'
 if os.path.exists(image_path):
     image = Image.open(image_path)
     resized_image = image.resize((100, 100))  # Resize to 100x100 pixels
 
-    # Convert the resized image to a PhotoImage
     photo = ImageTk.PhotoImage(resized_image)
 
     # Store the reference to the PhotoImage object to avoid garbage collection
     image_label = Label(root, image=photo)
-    image_label.image = photo  # Keep a reference to avoid being garbage collected
+    image_label.image = photo
     image_label.grid(row=0, column=2, rowspan=4, padx=10, pady=10)
 else:
     print(f"Error: {image_path} not found. Please check the file path.")
 
 
 def disable_buttons():
-    update_button.configure(state=DISABLED)
     highscore_button.configure(state=DISABLED)
     search_button.configure(state=DISABLED)
     rsn_search_button.configure(state=DISABLED)
@@ -349,7 +318,6 @@ def disable_buttons():
 
 def enable_buttons():
     rsn_search.configure(state=NORMAL)
-    update_button.configure(state=NORMAL)
     highscore_button.configure(state=NORMAL)
     search_button.configure(state=NORMAL)
     rsn_search_button.configure(state=NORMAL)
@@ -371,7 +339,7 @@ class PlayerHiscore:
         if from_wom:
             self.get_wom_player_hiscores()  # Fetch data from Wise Old Man API
         else:
-            self.get_player_hiscores()  # Fetch data from RuneScape Hiscores API
+            self.get_player_hiscores()  # Fetch data from RuneScape Hiscores Using Lite Hiscores
 
     # Fetch player data from Wise Old Man API
     def get_wom_player_hiscores(self):
@@ -401,8 +369,10 @@ class PlayerHiscore:
     # Fetch player data from RuneScape Hiscores API
     def get_player_hiscores(self):
         url = f"https://secure.runescape.com/m=hiscore_oldschool/index_lite.ws?player={self.player_name}"
-        if ironman:
+        if mode == 1:
             url = f"https://secure.runescape.com/m=hiscore_oldschool_ironman/index_lite.ws?player={self.player_name}"
+        elif mode == 2:
+            url = f"https://secure.runescape.com/m=hiscore_oldschool_hardcore_ironman/index_lite.ws?player={self.player_name}"
         response = requests.get(url)
         if response.status_code != 200:
             print(f"Failed to fetch data for {self.player_name}. Status code: {response.status_code}")
@@ -412,8 +382,7 @@ class PlayerHiscore:
         reader = csv.reader(player_data)
 
         for i, row in enumerate(reader):
-            if i < len(self.skills):  # Ensure we map each skill correctly
-                # Check if row data is valid (not missing or invalid)
+            if i < len(self.skills):
                 try:
                     rank = int(row[0])
                     level = int(row[1])
@@ -428,11 +397,12 @@ class PlayerHiscore:
                     'level': level,
                     'experience': experience
                 }
+        time.sleep(1)
 
     def get_hiscore_dict(self):
         return self.hiscore_dict
 
-# Compare orininal player and found player and return match percent
+# Compare orininal player and found player(s) and return match percent
 def compare_players_skills(original_player, found_player):
     match_score = 0
     skills_compared = 0
@@ -450,10 +420,10 @@ def compare_players_skills(original_player, found_player):
 
 
         skills_compared +=1
-        # If player level is equal to found level 0.2 points
+        # If player level is equal to found level 0.4 points
         if original_level == found_level:
             match_score += 0.4
-            # If player xp is equal to found xp 0.8 points (higher points due to not as likely to change varience)
+            # If player xp is equal to found xp 0.6 points (higher points due to not as likely to change varience)
             if original_experience == found_experience:
                 match_score += 0.6
             # If level is not same but within 5k xp, give 0.3 points
@@ -487,6 +457,7 @@ def find_matches_with_percentage(original_player_name):
 
 # Fetch names and display results
 def fetch_compare_display_matches():
+    disable_buttons()
     original_player_name = rsn_search.get()
     match_results = find_matches_with_percentage(original_player_name)
 
@@ -494,18 +465,21 @@ def fetch_compare_display_matches():
 
     # Output names into console
     for player, match_p in match_results.items():
-        print(f"{player}: {match_p:.2f}%\n")
         if match_p >= 75:
             root.after(0, console_output.insert, END, f"{player}: {match_p:.2f}%\n")
             root.after(0, console_output.see, END)  # Scroll to the end of the text box
+    enable_buttons()
 
+def fetch_compare_in_thread():
+    thread = threading.Thread(target=fetch_compare_display_matches)
+    thread.daemon = True  # Set the thread as a daemon so it will exit when the main program exits
+    thread.start()
 
-compare_button = Button(root, text="Compare\nPlayers", command=fetch_compare_display_matches, width=20)
-compare_button.grid(row=9, column=1)
+compare_button = Button(root, text="Compare\nPlayers", command=fetch_compare_in_thread, width=20)
+compare_button.grid(row=9, column=0)
 compare_button.configure(background="#c19a6b", foreground="#ffffff", activebackground="#a6805e", activeforeground="#ffffff")
 
-
-# Label for when error occurs in the check_boxes function
+# Labels for when error occurs in the check_boxes function
 error_label = Label(text="Please verify your entries", fg='red')
 error_label_rsn = Label(text="No skill data for RSN", fg='red')
 

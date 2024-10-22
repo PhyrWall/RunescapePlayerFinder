@@ -44,6 +44,8 @@ All images used in this project were sourced from the WiseOldMan GitHub reposito
 ### Screenshots
 ![python_1DY1h2NqJE](https://github.com/user-attachments/assets/251dffd6-c82a-4306-8ce4-3df03cda66a5)
 
+### Installation Instructions
+![Click Me](https://github.com/PhyrWall/RunescapePlayerFinder/blob/main/InstallationInstructions.md)
 
 ### Acknowledgments
 - **Wise Old Man API**: This project uses the [Wise Old Man API](https://wiseoldman.net/) to fetch player data.

@@ -1,52 +1,55 @@
-# RuneScape Player Search Tool
 
-A GUI tool for searching Old School RuneScape players based on their rank and XP, with the ability to interact with the 
-Wise Old Man API for updating player data. It's particularly useful when you have player information from recent hiscores 
-or other sources and need to find their RSN after a double name change.
+## Old School RuneScape Player Finder Tool
 
-## Features
+This is a tool that allows users to search for Old School RuneScape players based on their rank and experience in specific skills. It includes the ability to:
+- Track player rank and XP in specific skills.
+- Fetch player data via the Wise Old Man API.
+- Interact with the Old School RuneScape official Hiscores through web scraping.
+- Compare players' stats, including features to search through the official OSRS Hiscores and track player performance.
 
-### 1. Search Players by Skill Rank and XP
-- Select a skill, input a target XP, and an estimated rank then click search.
+All images used in this project were sourced from the WiseOldMan GitHub repository:
+[WiseOldMan GitHub - Metrics](https://github.com/wise-old-man/wise-old-man/tree/master/app/public/img/metrics)
 
-### 2. Scraping Hiscores
-- Checks multiple pages for players that match the XP criteria provided.
-  - **Rank and Xp is required**
-
-### 3. Display Player Search Results
-- Players found are listed in the command console.
-
-### 4. Update Players on Wise Old Man
-- Update player data on the Wise Old Man (WOM) website via its API.
-- There will be a 3-second delay between each "Found player" to avoid Wise Old Man's 20 requests per minute
-  - Edit to the code can be made for use of API key
-
-### 5. Open Hiscores in Web Browser
-- Optional to open the hiscores page of any player found directly in the default web browser by clicking a button.
-  - Searching again will erase the last found players
-
-### 6. GUI Features
-- Users can select a skill from a dropdown menu, input the player’s rank and XP, and search for that player. Users can now search for a RSN on WOM to pull the most recent data.
-- A console displays output messages and search results.
-- Buttons to search offical hiscores for player with xp, update players on WOM, and open hiscores are styled and integrated into the GUI.
+### Features
+- **Search Players**: Look up player stats using the Wise Old Man API.
+- **Hiscore Scraping**: Scrape OSRS official Hiscores for players based on their rank and experience.
+- **Ironman Modes**: Toggle between Main, Ironman, and Hardcore Ironman modes for Hiscores.
+- **Skill Tracking**: Track specific skills like Attack, Defence, Strength, and more.
+- **Player Comparison**: Compare multiple players based on their skill levels and XP.
   
-![python_XO1HmPxt4d](https://github.com/user-attachments/assets/52f4a387-c908-498f-92bc-c5f08b01243f)
+### Requirements
+- Python 3.10
+- Tkinter
+- Pillow
+- Requests
+- BeautifulSoup
+- WOM (Wise Old Man Python API client)
+
+### How to Run
+1. Clone this repository.
+2. Install the required dependencies using `pip`:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Run the `main.py` file:
+   ```bash
+   python main.py
+   ```
+
+### Usage
+- **Search for a Player**: Input a RuneScape username and search for their latest stats using the Wise Old Man API.
+- **Compare Players**: After searching, use the "Compare Players" button to compare multiple players based on the Hiscores.
+- **Toggle Modes**: Use the toggle button to switch between Main, Ironman, and Hardcore Ironman for more accurate Hiscore scraping.
+
+### Screenshots
+![python_1DY1h2NqJE](https://github.com/user-attachments/assets/251dffd6-c82a-4306-8ce4-3df03cda66a5)
 
 
-## Requirements
+### Acknowledgments
+- **Wise Old Man API**: This project uses the [Wise Old Man API](https://wiseoldman.net/) to fetch player data.
+- **Old School RuneScape**: For access to the Hiscores and player stats.
 
-To run this program, you need to install the following Python packages:
-- `python 3.10`: Required to run the program.
-- `requests`: for making HTTP requests to scrape data from the RuneScape hiscores.
-- `BeautifulSoup`: for parsing HTML and extracting player information.
-- `PIL` (Pillow): for image manipulation and resizing.
-- `wom`: for interacting with the Wise Old Man API.
-
-You can install the dependencies via 
-```bash
-pip install -r requirements.txt
-```
-Developer:
-Discord: jhandeeee
-RSN: PhyrWall, ShinyRedDino
-
+### Developer
+- **PhyrWall**
+- Discord: `jhandeeee`
+- RuneScape: `PhyrWall`, `ShinyRedDino`

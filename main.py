@@ -292,7 +292,7 @@ def open_highscores(players):
             time.sleep(0.2)
         open(base_url + str(runescape_rsn))
 
-image_path = 'assets/Logo.png'
+image_path = 'assets/app_logo.png'
 if os.path.exists(image_path):
     image = Image.open(image_path)
     resized_image = image.resize((100, 100))  # Resize to 100x100 pixels

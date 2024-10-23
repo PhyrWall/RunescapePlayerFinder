@@ -30,13 +30,11 @@ def resource_path(relative_path):
 
     return os.path.join(base_path, relative_path)
 
-
 root = Tk()
 root.title("Runescape Player Finder")
 root.iconbitmap(resource_path('assets\\icon.ico'))
 root.minsize(height=530, width=430)
 root.configure(background='#0f2b5a')
-
 
 client_wom = wom.Client(api_base_url="https://api.wiseoldman.net/v2")
 

@@ -1,12 +1,13 @@
 """
 GUI tool to search for Old School RuneScape players (based on their rank/xp), track their rank and XP in specific skills,
 and interact with the Wise Old Man API for player updates. Developed by PhyrWall
-All Images were pulled from the WiseOldMan GitHub.
+All Images were pulled from the WiseOldMan GitHub
 https://github.com/wise-old-man/wise-old-man/tree/master/app/public/img/metrics
 """
 
 import os
 import threading
+import sys
 import time
 import csv
 from io import StringIO
@@ -18,9 +19,21 @@ import wom as wom
 from PIL import Image, ImageTk
 from bs4 import BeautifulSoup
 
+# Function to find the correct path to assets
+def resource_path(relative_path):
+    """ Get the absolute path to the resource, works for both development and PyInstaller's onefile mode """
+    try:
+        # PyInstaller creates a temporary folder named _MEIPASS where bundled files are stored
+        base_path = sys._MEIPASS
+    except AttributeError:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
+
 root = Tk()
 root.title("Runescape Player Finder")
-root.iconbitmap('assets\\icon.ico')
+root.iconbitmap(resource_path('assets\\icon.ico'))
 root.minsize(height=530, width=430)
 root.configure(background='#0f2b5a')
 
@@ -76,31 +89,28 @@ def search_player(rank, skil_xp):
     clear_console()
     # All skills
     runescape_skills = {'Attack': 1,
-                   'Defence': 2,
-                   'Strength': 3,
-                   'Hitpoints': 4,
-                   'Ranged': 5,
-                   'Prayer': 6,
-                   'Magic': 7,
-                   'Cooking': 8,
-                   'Woodcutting': 9,
-                   'Fletching': 10,
-                   'Fishing': 11,
-                   'Firemaking': 12,
-                   'Crafting': 13,
-                   'Smithing': 14,
-                   'Mining': 15,
-                   'Herblore': 16,
-                   'Agility': 17,
-                   'Thieving': 18,
-                   'Slayer': 19,
-                   'Farming': 20,
-                   'Runecrafting': 21,
-                   'Hunter': 22,
-                   'Construction': 23}
-
-    rank = rank
-    xp = skil_xp
+                        'Defence': 2,
+                        'Strength': 3,
+                        'Hitpoints': 4,
+                        'Ranged': 5,
+                        'Prayer': 6,
+                        'Magic': 7,
+                        'Cooking': 8,
+                        'Woodcutting': 9,
+                        'Fletching': 10,
+                        'Fishing': 11,
+                        'Firemaking': 12,
+                        'Crafting': 13,
+                        'Smithing': 14,
+                        'Mining': 15,
+                        'Herblore': 16,
+                        'Agility': 17,
+                        'Thieving': 18,
+                        'Slayer': 19,
+                        'Farming': 20,
+                        'Runecrafting': 21,
+                        'Hunter': 22,
+                        'Construction': 23}
 
 
     # Starting page is 6 pages sooner for page differences, this is where it will start web scraping
@@ -115,7 +125,7 @@ def search_player(rank, skil_xp):
         url = f'https://secure.runescape.com/m=hiscore_oldschool/overall?table={runescape_skills[clicked.get()]}&page='
 
     # Run the search in a daemon thread
-    thread = threading.Thread(target=hiscore_webscrape, args=(url, xp, page, rank))
+    thread = threading.Thread(target=hiscore_webscrape, args=(url, skil_xp, page, rank))
     thread.daemon = True
     thread.start()
 
@@ -147,6 +157,8 @@ def hiscore_webscrape(url, target_xp, page, rank):
 
     root.after(0, console_output.insert, END, f"Searching for player\nSkill: {clicked.get()}\nTarget XP: {target_xp}\nEstimated Rank: {rank}\nAccount type: {account_type}\n--------------------\n")
     for page in range(start_page, end_page):
+
+        print(page)
         response = requests.get(url + str(page))
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -172,6 +184,7 @@ def hiscore_webscrape(url, target_xp, page, rank):
             root.after(0, console_output.insert, END, f"Failed to fetch the high scores page. Status code: {response.status_code}\n")
             root.after(0, console_output.see, END)
             break
+        time.sleep(0.2)
     root.after(0, console_output.insert, END, f"\nFinished searching ({len(found_players)} players found)\n")
 
     # Scroll to the end of the text widget
@@ -271,12 +284,12 @@ console_output.pack(fill=BOTH, expand=True)
 
 # Button setup with your custom styles
 highscore_button = Button(root,
-                       text="Open Offical\n Hiscores",
-                       command=lambda: open_highscores(found_players),  # Open highscores for all players
-                       width=20)
+                          text="Open Offical\n Hiscores",
+                          command=lambda: open_highscores(found_players),  # Open highscores for all players
+                          width=20)
 highscore_button.grid(row=9, column=2)  # Adjust the row, column, and span as needed
 highscore_button.configure(background="#c19a6b", foreground="#ffffff",
-                        activebackground="#a6805e", activeforeground="#ffffff")
+                           activebackground="#a6805e", activeforeground="#ffffff")
 
 discord = Label(root, text="Discord: jhandeeee", fg='#ffffff', bg='#0f2b5a', width=20)
 discord.grid(row=10, column=0, sticky="SW")  # Aligns the label to the left (west)
@@ -292,7 +305,7 @@ def open_highscores(players):
             time.sleep(0.2)
         open(base_url + str(runescape_rsn))
 
-image_path = 'assets/app_logo.png'
+image_path = resource_path('assets/app_logo.png')
 if os.path.exists(image_path):
     image = Image.open(image_path)
     resized_image = image.resize((100, 100))  # Resize to 100x100 pixels

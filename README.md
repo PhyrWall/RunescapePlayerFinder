@@ -50,7 +50,8 @@ All images used in this project were sourced from the WiseOldMan GitHub reposito
 ### Acknowledgments
 - **Wise Old Man API**: This project uses the [Wise Old Man API](https://wiseoldman.net/) to fetch player data.
 - **Old School RuneScape**: For access to the Hiscores and player stats.
-
+### Download
+![Download Here](https://github.com/PhyrWall/RunescapePlayerFinder/releases/download/v1.0/Runescape_Name_Finder_v1.0.exe)
 ### Developer
 - **PhyrWall**
 - Discord: `jhandeeee`
